@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="STM32,定时器,RTOS,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前后台系统，RTOS与定时器任务管理系统前后台系统&amp;emsp;&amp;emsp;在裸机上写程序,通常把程序分为两部分：前台系统和后台系统。&amp;emsp;&amp;emsp;简单的小系统通常是前后台系统，这样的程序包括一个死循环和若干个中断服务程序：应用程序是一个无限循环，循环中调用API函数完成所需的操作，这个大循环就叫做后台系统。中断服务程序用于处理系统的异步事件，也就是前台系统。前台是中断级，后台是任务级。">
+<meta name="keywords" content="STM32,定时器,RTOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="STM32学习记录之定时器任务管理系统">
+<meta property="og:url" content="http://yoursite.com/2019/06/25/STM32学习记录之定时器任务管理系统/index.html">
+<meta property="og:site_name" content="Tulring’s Blog">
+<meta property="og:description" content="前后台系统，RTOS与定时器任务管理系统前后台系统&amp;emsp;&amp;emsp;在裸机上写程序,通常把程序分为两部分：前台系统和后台系统。&amp;emsp;&amp;emsp;简单的小系统通常是前后台系统，这样的程序包括一个死循环和若干个中断服务程序：应用程序是一个无限循环，循环中调用API函数完成所需的操作，这个大循环就叫做后台系统。中断服务程序用于处理系统的异步事件，也就是前台系统。前台是中断级，后台是任务级。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-24T18:00:36.437Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="STM32学习记录之定时器任务管理系统">
+<meta name="twitter:description" content="前后台系统，RTOS与定时器任务管理系统前后台系统&amp;emsp;&amp;emsp;在裸机上写程序,通常把程序分为两部分：前台系统和后台系统。&amp;emsp;&amp;emsp;简单的小系统通常是前后台系统，这样的程序包括一个死循环和若干个中断服务程序：应用程序是一个无限循环，循环中调用API函数完成所需的操作，这个大循环就叫做后台系统。中断服务程序用于处理系统的异步事件，也就是前台系统。前台是中断级，后台是任务级。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/25/STM32学习记录之定时器任务管理系统/">
+
+
+
+
+
+  <title>STM32学习记录之定时器任务管理系统 | Tulring’s Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Tulring’s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>
+            
+            日程表
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/25/STM32学习记录之定时器任务管理系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tulring">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/iroman.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tulring’s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">STM32学习记录之定时器任务管理系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-25T00:58:49+08:00">
+                2019-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/STM32/" itemprop="url" rel="index">
+                    <span itemprop="name">STM32</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前后台系统，RTOS与定时器任务管理系统"><a href="#前后台系统，RTOS与定时器任务管理系统" class="headerlink" title="前后台系统，RTOS与定时器任务管理系统"></a>前后台系统，RTOS与定时器任务管理系统</h1><h3 id="前后台系统"><a href="#前后台系统" class="headerlink" title="前后台系统"></a>前后台系统</h3><p>&emsp;&emsp;在裸机上写程序,通常把程序分为两部分：前台系统和后台系统。<br>&emsp;&emsp;简单的小系统通常是前后台系统，这样的程序包括一个死循环和若干个中断服务程序：应用程序是一个无限循环，循环中调用API函数完成所需的操作，这个大循环就叫做后台系统。中断服务程序用于处理系统的异步事件，也就是前台系统。前台是中断级，后台是任务级。</p>
+<h3 id="RTOS"><a href="#RTOS" class="headerlink" title="RTOS"></a>RTOS</h3><p>&emsp;&emsp;RTOS全称为：Real Time OS，就是实时操作系统，强调的是：<strong>实时性</strong>。实时操作系统又分为硬实时和软实时。硬实时要求在规定的时间内必须完成操作 ，硬实时系统不允许超时，在软实时里面处理过程超时的后果就没有那么严格。在实时操作系统中，我们可以把要实现的功能划分为多个任务，每个任务负责实现其中的一部分，每个任务都是一个很简单的程序，通常是一个死循环。<br>&emsp;&emsp;RTOS操作系统：UCOS，FreeRTOS，RTX，RT-Thread，DJYOS等。<br>&emsp;&emsp;RTOS操作系统的核心内容在于：实时内核。RTOS的内核负责管理所有的任务，内核决定了运行哪个任务，何时停止当前任务切换到其他任务，这个是内核的多任务管理能力。多任务管理给人的感觉就好像芯片有多个CPU，多任务管理实现了CPU资源的最大化利用，多任务管理有助于实现程序的模块化开发，能够实现复杂的实时应用。<br>&emsp;&emsp;可剥夺内核顾名思义就是可以剥夺其他任务的CPU使用权，它总是运行就绪任务中的优先级最高的那个任务。</p>
+<h3 id="定时器管理系统"><a href="#定时器管理系统" class="headerlink" title="定时器管理系统"></a>定时器管理系统</h3><p>&emsp;&emsp;对于以上两种系统，前后台系统整个程序运行严格遵守先后顺序，对于有实时性要求的任务无法做到周期性运行。RTOS可以完美得做到，但是开发要求有一定知识基础，对RTOS有一定了解。因此第三种发难应运而生：定时器任务管理系统。<br>&emsp;&emsp;定时器任务管理系统由定时器中断提供时钟基础，对每个任务进行定时处理。在大多数情况下，可以做到对单个任务周期性运行处理。对一些有实时性要求但是要求不苛刻的场景还是很方便的。</p>
+<h1 id="定时器任务管理系统原理"><a href="#定时器任务管理系统原理" class="headerlink" title="定时器任务管理系统原理"></a>定时器任务管理系统原理</h1><p>&emsp;&emsp;定时器任务管理系统，通过定时器定时提供一个时间基准。例如定时器1ms中断一次，在中断处理函数中将时间变量累加，就可以得到整个系统运行时间，当时间变量累加到n，就将对应的标志位置1，认为n ms到了，系统检测到标志位为1就执行对应的任务。</p>
+<h2 id="时间变量结构体"><a href="#时间变量结构体" class="headerlink" title="时间变量结构体"></a>时间变量结构体</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">typedef struct</span><br><span class="line">&#123;</span><br><span class="line">    u8 uCount10ms;</span><br><span class="line">    u8 uCount50ms;</span><br><span class="line">    u8 uCount100ms;</span><br><span class="line">    u8 uCount1000ms;</span><br><span class="line">    u8 uFlag5ms;</span><br><span class="line">    u8 uFlag10ms;</span><br><span class="line">    u8 uFlag50ms;</span><br><span class="line">    u8 uFlag100ms;</span><br><span class="line">    u8 uFlag1000ms;</span><br><span class="line">&#125; TimerDef;</span><br></pre></td></tr></table></figure>
+
+<h2 id="定时器时间基准"><a href="#定时器时间基准" class="headerlink" title="定时器时间基准"></a>定时器时间基准</h2><p>&emsp;&emsp;定时器初始化函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">//定时器初始化</span><br><span class="line">//0.5ms进入中断一次</span><br><span class="line">void TimerInit()</span><br><span class="line">&#123;</span><br><span class="line">    NVIC_InitTypeDef NVIC_InitStructure;</span><br><span class="line">    TIM_TimeBaseInitTypeDef  TIM_TimeBaseInitStruct;</span><br><span class="line"></span><br><span class="line">    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);</span><br><span class="line">    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);</span><br><span class="line"></span><br><span class="line">    //enable Time2 gloabal Interrupt</span><br><span class="line">    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;</span><br><span class="line">    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;</span><br><span class="line">    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 6;</span><br><span class="line">    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;</span><br><span class="line">    NVIC_Init(&amp;NVIC_InitStructure);</span><br><span class="line"></span><br><span class="line">    TIM_DeInit(TIM2);</span><br><span class="line">    TIM_TimeBaseInitStruct.TIM_Period = 719;   //100KHz  //定时器计数频率=系统时钟/分频系数</span><br><span class="line">    TIM_TimeBaseInitStruct.TIM_Prescaler = 49;  //定时器自动重装载值 //2K // //0.5ms</span><br><span class="line">    TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;</span><br><span class="line">    TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;</span><br><span class="line">    TIM_TimeBaseInit(TIM2, &amp;TIM_TimeBaseInitStruct);</span><br><span class="line"></span><br><span class="line">    TIM_ClearFlag(TIM2, TIM_FLAG_Update);</span><br><span class="line">    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);</span><br><span class="line">    TIM_Cmd(TIM2, ENABLE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;定时器中断处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">void TIM2_IRQHandler(void)   //0.5ms</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)//判断中断</span><br><span class="line">    &#123;</span><br><span class="line">        TIM_ClearITPendingBit(TIM2, TIM_FLAG_Update);//清除中断标志位</span><br><span class="line">        Timer.uCount ++; //时间累积变量 0.5ms累加一次</span><br><span class="line">        if(Update_tim &gt; 0)Update_tim--;//定时器延时，0.5ms减少1，为零时定时到达</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="时间管理"><a href="#时间管理" class="headerlink" title="时间管理"></a>时间管理</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">void updateTimerTask(TimerDef *Timer)</span><br><span class="line">&#123;</span><br><span class="line">    if (Timer-&gt;uCount &gt;= 10) //0.5*10=5 ms到达</span><br><span class="line">    &#123;</span><br><span class="line">        Timer-&gt;uCount = 0;</span><br><span class="line"></span><br><span class="line">        Timer-&gt;uFlag5ms = 1; //5 ms标志位置1</span><br><span class="line">        Timer-&gt;uCount10ms ++;</span><br><span class="line">        Timer-&gt;uCount50ms ++;</span><br><span class="line">        Timer-&gt;uCount100ms ++;</span><br><span class="line">        Timer-&gt;uCount1000ms ++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (Timer-&gt;uCount10ms &gt;= 2)//10ms到达</span><br><span class="line">    &#123;</span><br><span class="line">        Timer-&gt;uCount10ms = 0;</span><br><span class="line">        Timer-&gt;uFlag10ms = 1;</span><br><span class="line">    &#125;</span><br><span class="line">    if (Timer-&gt;uCount50ms &gt;= 10)//50ms到达</span><br><span class="line">    &#123;</span><br><span class="line">        Timer-&gt;uCount50ms = 0;</span><br><span class="line">        Timer-&gt;uFlag50ms = 1;</span><br><span class="line">    &#125;</span><br><span class="line">    if (Timer-&gt;uCount100ms &gt;= 20)//100ms到达</span><br><span class="line">    &#123;</span><br><span class="line">        Timer-&gt;uCount100ms = 0;</span><br><span class="line">        Timer-&gt;uFlag100ms = 1;</span><br><span class="line">    &#125;</span><br><span class="line">    if (Timer-&gt;uCount1000ms &gt;= 200)//1000ms到达</span><br><span class="line">    &#123;</span><br><span class="line">        Timer-&gt;uCount1000ms = 0;</span><br><span class="line">        Timer-&gt;uFlag1000ms = 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="时间任务管理"><a href="#时间任务管理" class="headerlink" title="时间任务管理"></a>时间任务管理</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">//大循环任务</span><br><span class="line">void EverWhile_tasks()</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line">//5ms 任务</span><br><span class="line">void Per_5ms_tasks()</span><br><span class="line">&#123;</span><br><span class="line">    if(Timer.uFlag5ms != 1)//5ms未到达</span><br><span class="line">        return;//退出函数</span><br><span class="line">	task1();//用户函数</span><br><span class="line">    Timer.uFlag5ms = 0;//清空5ms标志位</span><br><span class="line">&#125;</span><br><span class="line">//10ms 任务</span><br><span class="line">void Per_10ms_tasks()</span><br><span class="line">&#123;</span><br><span class="line">    if(Timer.uFlag10ms != 1)</span><br><span class="line">        return;</span><br><span class="line">	task2();//用户函数</span><br><span class="line">    DIU.Timer.uFlag10ms = 0;</span><br><span class="line">&#125;</span><br><span class="line">//50ms 任务</span><br><span class="line">void Per_50ms_tasks()</span><br><span class="line">&#123;</span><br><span class="line">    if(Timer.uFlag50ms != 1)</span><br><span class="line">        return;</span><br><span class="line">	task3();//用户函数</span><br><span class="line">    Timer.uFlag50ms = 0;</span><br><span class="line">&#125;</span><br><span class="line">//100ms 任务</span><br><span class="line">void Per_100ms_tasks()</span><br><span class="line">&#123;</span><br><span class="line">    if(DIU.Timer.uFlag100ms != 1)</span><br><span class="line"> 			 return;</span><br><span class="line">	task4();//用户函数</span><br><span class="line">    DIU.Timer.uFlag100ms = 0;//	//</span><br><span class="line">&#125;</span><br><span class="line">//1s 任务</span><br><span class="line">void Per_1s_tasks()</span><br><span class="line">&#123;</span><br><span class="line">    if(DIU.Timer.uFlag1000ms != 1)</span><br><span class="line">        return;</span><br><span class="line">	task5();//用户函数</span><br><span class="line">	DIU.Timer.uFlag1000ms = 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/STM32/" rel="tag"># STM32</a>
+          
+            <a href="/tags/定时器/" rel="tag"># 定时器</a>
+          
+            <a href="/tags/RTOS/" rel="tag"># RTOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/25/STM32学习记录之看门狗/" rel="next" title="STM32学习记录之看门狗">
+                <i class="fa fa-chevron-left"></i> STM32学习记录之看门狗
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/26/SD卡和TF(MicroSD)卡区别/" rel="prev" title="SD卡和TF卡区别">
+                SD卡和TF卡区别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/iroman.jpg" alt="Tulring">
+            
+              <p class="site-author-name" itemprop="name">Tulring</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/tulring" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:342656372@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="/images/wechat.jpg" target="_blank" title="微信">
+                      
+                        <i class="fa fa-fw fa-globe"></i>微信</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="/images/qq.jpg" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                电子开源网站
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.openedv.com/" title="正点原子" target="_blank">正点原子</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.firebbs.cn/forum.php" title="野火开源" target="_blank">野火开源</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://forum.armfly.com/forum.php" title="安富莱" target="_blank">安富莱</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前后台系统，RTOS与定时器任务管理系统"><span class="nav-number">1.</span> <span class="nav-text">前后台系统，RTOS与定时器任务管理系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#前后台系统"><span class="nav-number">1.0.1.</span> <span class="nav-text">前后台系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RTOS"><span class="nav-number">1.0.2.</span> <span class="nav-text">RTOS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定时器管理系统"><span class="nav-number">1.0.3.</span> <span class="nav-text">定时器管理系统</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#定时器任务管理系统原理"><span class="nav-number">2.</span> <span class="nav-text">定时器任务管理系统原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#时间变量结构体"><span class="nav-number">2.1.</span> <span class="nav-text">时间变量结构体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定时器时间基准"><span class="nav-number">2.2.</span> <span class="nav-text">定时器时间基准</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间管理"><span class="nav-number">2.3.</span> <span class="nav-text">时间管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间任务管理"><span class="nav-number">2.4.</span> <span class="nav-text">时间任务管理</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tulring</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
