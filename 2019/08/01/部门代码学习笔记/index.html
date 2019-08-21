@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://www.github.com/tulring/test/raw/master/%E5%B0%8F%E4%B9%A6%E5%8C%A0/AGV%E6%9E%B6%E6%9E%84%E5%9B%BE.jpg">
 <meta property="og:image" content="https://www.github.com/tulring/test/raw/master/%E5%B0%8F%E4%B9%A6%E5%8C%A0/AGV%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84%E5%9B%BE.png">
-<meta property="og:updated_time" content="2019-08-02T02:21:46.491Z">
+<meta property="og:updated_time" content="2019-08-04T15:25:41.446Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="部门代码学习笔记">
 <meta name="twitter:description" content="AGV学习AGV常见架构&amp;emsp;&amp;emsp;AGV整体架构如上图所示，AGV主要功能为：&amp;emsp;&amp;emsp;     - 1.行走。 &amp;emsp;&amp;emsp;    - 2.安全条件下执行动作。  &amp;emsp;&amp;emsp; 如上图所示为AGV系统控制结构图。整个控制系统由中控，RJS_LINK，AGV组成。AGV控制采用VCU搭配MCU，DIU协同处理完成。各个构件的功能如下：&amp;emsp;">
@@ -385,7 +385,8 @@
 <h3 id="安全与动作"><a href="#安全与动作" class="headerlink" title="安全与动作"></a>安全与动作</h3><p>&emsp;&emsp;AGV安全与动作部分由DIU控制。<br><strong>&emsp;&emsp; - 安全部分  ( DIU监测各个安全传感器信息，实时处理上报)<br>&emsp;&emsp; - 动作部分 (DIU 接收VCU下发操作码，控制执行电机动作，根据传感器反馈信息完成任务上报。)</strong></p>
 <h4 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h4><p>&emsp;&emsp;常见的安全构件如下：<br>&emsp;&emsp; - 障碍物传感器<br>&emsp;&emsp; - 触边信号：防撞条，鼠尾开关，脚踏开关。<br>&emsp;&emsp; - 急停按钮<br>&emsp;&emsp; - 光电<br>&emsp;&emsp; - 激光测距传感器</p>
 <h4 id="动作"><a href="#动作" class="headerlink" title="动作"></a>动作</h4><p>&emsp;&emsp; - 执行电机<br>&emsp;&emsp; - 传感器</p>
-<h2 id="AGV代码整理分析"><a href="#AGV代码整理分析" class="headerlink" title="AGV代码整理分析"></a>AGV代码整理分析</h2><h3 id="MCU代码"><a href="#MCU代码" class="headerlink" title="MCU代码"></a>MCU代码</h3><h3 id="DIU代码"><a href="#DIU代码" class="headerlink" title="DIU代码"></a>DIU代码</h3><p>&emsp;&emsp; 代码块：<br><strong>&emsp;&emsp; - 定时器任务管理<br>&emsp;&emsp; - VCU-DIU通讯<br>&emsp;&emsp; - 开关量信号处理<br>&emsp;&emsp; - 障碍物传感器<br>&emsp;&emsp; - 任务执行</strong></p>
+<h2 id="AGV代码整理分析"><a href="#AGV代码整理分析" class="headerlink" title="AGV代码整理分析"></a>AGV代码整理分析</h2><h3 id="MCU代码"><a href="#MCU代码" class="headerlink" title="MCU代码"></a>MCU代码</h3><p>&emsp;&emsp; - 系统初始化（硬件驱动，传感器状态，系统参数）<br>&emsp;&emsp; - 清空MCU参数<br>&emsp;&emsp; - 更新各个设备状态<br>&emsp;&emsp; - 更新MCU参数</p>
+<h3 id="DIU代码"><a href="#DIU代码" class="headerlink" title="DIU代码"></a>DIU代码</h3><p>&emsp;&emsp; 代码块：<br><strong>&emsp;&emsp; - 定时器任务管理<br>&emsp;&emsp; - VCU-DIU通讯<br>&emsp;&emsp; - 开关量信号处理<br>&emsp;&emsp; - 障碍物传感器<br>&emsp;&emsp; - 任务执行</strong></p>
 <h4 id="定时器任务管理"><a href="#定时器任务管理" class="headerlink" title="定时器任务管理"></a>定时器任务管理</h4><p><a href="https://tulring.github.io/2019/06/25/STM32%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%E4%B9%8B%E5%AE%9A%E6%97%B6%E5%99%A8%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/" target="_blank" rel="noopener">定时器任务管理系统详述</a></p>
 <h4 id="VCU-DIU通讯"><a href="#VCU-DIU通讯" class="headerlink" title="VCU-DIU通讯"></a>VCU-DIU通讯</h4><p>&emsp;&emsp; VCU与DIU之间通过CAN通讯。</p>
 

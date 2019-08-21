@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="硬件基础U-boot烧录J-Link烧录">
+<meta name="description" content="硬件基础程序烧录J-Link烧录使用U-Boot下载bin文件&amp;emsp;&amp;emsp;使用U-Boot下载程序文件相对于EOP下载方式要快很多，但是要先使用EOP下载U-Boot程序到板内，U-Boot执行后，才可以使用其下载功能。&amp;emsp;&amp;emsp;开发板自带两个mini USB接口，其中一个是USB转串口，用于输入输出控制指令和显示数据。另外一个是USB Device接口，即USB从设备，">
 <meta property="og:type" content="article">
-<meta property="og:title" content="嵌入式入门">
+<meta property="og:title" content="Linux嵌入式学习（基于JZ2440）">
 <meta property="og:url" content="http://yoursite.com/2019/06/23/嵌入式入门/index.html">
 <meta property="og:site_name" content="Tulring’s Blog">
-<meta property="og:description" content="硬件基础U-boot烧录J-Link烧录">
+<meta property="og:description" content="硬件基础程序烧录J-Link烧录使用U-Boot下载bin文件&amp;emsp;&amp;emsp;使用U-Boot下载程序文件相对于EOP下载方式要快很多，但是要先使用EOP下载U-Boot程序到板内，U-Boot执行后，才可以使用其下载功能。&amp;emsp;&amp;emsp;开发板自带两个mini USB接口，其中一个是USB转串口，用于输入输出控制指令和显示数据。另外一个是USB Device接口，即USB从设备，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-22T20:15:21.106Z">
+<meta property="og:updated_time" content="2019-08-21T11:21:42.711Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="嵌入式入门">
-<meta name="twitter:description" content="硬件基础U-boot烧录J-Link烧录">
+<meta name="twitter:title" content="Linux嵌入式学习（基于JZ2440）">
+<meta name="twitter:description" content="硬件基础程序烧录J-Link烧录使用U-Boot下载bin文件&amp;emsp;&amp;emsp;使用U-Boot下载程序文件相对于EOP下载方式要快很多，但是要先使用EOP下载U-Boot程序到板内，U-Boot执行后，才可以使用其下载功能。&amp;emsp;&amp;emsp;开发板自带两个mini USB接口，其中一个是USB转串口，用于输入输出控制指令和显示数据。另外一个是USB Device接口，即USB从设备，">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title>嵌入式入门 | Tulring’s Blog</title>
+  <title>Linux嵌入式学习（基于JZ2440） | Tulring’s Blog</title>
   
 
 
@@ -299,7 +299,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">嵌入式入门</h1>
+          <h1 class="post-title" itemprop="name headline">Linux嵌入式学习（基于JZ2440）</h1>
         
 
         <div class="post-meta">
@@ -349,7 +349,32 @@
       
 
       
-        <h1 id="硬件基础"><a href="#硬件基础" class="headerlink" title="硬件基础"></a>硬件基础</h1><h1 id="U-boot烧录"><a href="#U-boot烧录" class="headerlink" title="U-boot烧录"></a>U-boot烧录</h1><h2 id="J-Link烧录"><a href="#J-Link烧录" class="headerlink" title="J-Link烧录"></a><a href="https://blog.csdn.net/liyuqian199695/article/details/53574832" target="_blank" rel="noopener">J-Link烧录</a></h2>
+        <h1 id="硬件基础"><a href="#硬件基础" class="headerlink" title="硬件基础"></a>硬件基础</h1><h1 id="程序烧录"><a href="#程序烧录" class="headerlink" title="程序烧录"></a>程序烧录</h1><h2 id="J-Link烧录"><a href="#J-Link烧录" class="headerlink" title="J-Link烧录"></a><a href="https://blog.csdn.net/liyuqian199695/article/details/53574832" target="_blank" rel="noopener">J-Link烧录</a></h2><h2 id="使用U-Boot下载bin文件"><a href="#使用U-Boot下载bin文件" class="headerlink" title="使用U-Boot下载bin文件"></a>使用U-Boot下载bin文件</h2><p>&emsp;&emsp;使用U-Boot下载程序文件相对于EOP下载方式要快很多，但是要先使用EOP下载U-Boot程序到板内，U-Boot执行后，才可以使用其下载功能。<br>&emsp;&emsp;开发板自带两个mini USB接口，其中一个是USB转串口，用于输入输出控制指令和显示数据。另外一个是USB Device接口，即USB从设备，用于下载程序文件。</p>
+<h3 id="建立串口通讯"><a href="#建立串口通讯" class="headerlink" title="建立串口通讯"></a>建立串口通讯</h3><p>&emsp;&emsp; - 将开发板USB转串口端口连接到PC，安装PL2303驱动，<strong>注意此处驱动需要安装老版驱动，新版驱动不支持开发板设备。</strong><br>&emsp;&emsp; - 将串口转接线接入PC，识别到串口后，打开MobaXterm软件，选择Session –&gt; Serial,然后选择对应的串口和波特率和setting选项。然后开发板调到nor启动，重启。在串口监控界面在倒计时结束前敲击键盘即可进入u-Boot界面。</p>
+<h3 id="建立文件传输通道"><a href="#建立文件传输通道" class="headerlink" title="建立文件传输通道"></a>建立文件传输通道</h3><p>&emsp;&emsp; 在建立了串口通讯后，还要建立文件传输通道才可以下载文件到开发板。步骤如下：<br>&emsp;&emsp;  - 将USB device接口接到PC，然后打开Zadig软件，选择Options –&gt;List All Device,然后选择SEC S3C2440，libusb-win32，点击Install Driver即可安装开发板USB Device驱动。<br>&emsp;&emsp;  - 在串口监控界面进入u-Boot界面，按n选择下载文件到nand后，打开DNW_100ASK.ee,显示USB：OK后下载.bin文件。将开发板调成NAND启动，重启即可执行下载的程序。</p>
+<h1 id="驱动开发"><a href="#驱动开发" class="headerlink" title="驱动开发"></a>驱动开发</h1><h2 id="驱动程序开发流程"><a href="#驱动程序开发流程" class="headerlink" title="驱动程序开发流程"></a>驱动程序开发流程</h2><p>&emsp;&emsp; 驱动程序开发流程如下：<br>&emsp;&emsp;  - 电路分析    (分析电路，确定软件逻辑)<br>&emsp;&emsp;  - 程序编写    (根据逻辑和寄存器，编写程序)<br>&emsp;&emsp;  - 编译，链接，生成可执行文件 (arm-linux-gcc编译)<br>&emsp;&emsp;  - 下载程序 (U-Boot下载)<br>&emsp;&emsp;  - 运行，修改程序</p>
+<h2 id="LED驱动开发"><a href="#LED驱动开发" class="headerlink" title="LED驱动开发"></a>LED驱动开发</h2><h3 id="原理图"><a href="#原理图" class="headerlink" title="原理图"></a>原理图</h3><h3 id="程序代码"><a href="#程序代码" class="headerlink" title="程序代码"></a>程序代码</h3><p>&emsp;&emsp; 主要涉及寄存器：GPFCON，GPFDAT。<br>&emsp;&emsp;  - GPFCON：0x0x56000050  IO模式控制寄存器<br>&emsp;&emsp;  - GPFDAT：0x56000054  IO数据控制寄存器</p>
+<h4 id="编写程序"><a href="#编写程序" class="headerlink" title="编写程序"></a>编写程序</h4><p>&emsp;&emsp;新建文件LED.S(汇编文件)，用NodePad++打开编辑如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">*		点亮LED：GPF4</span><br><span class="line">*/</span><br><span class="line">.text</span><br><span class="line">.global _start</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line"></span><br><span class="line">/*配置GPF4为输出引脚</span><br><span class="line">*把0x00001500写到地址0x56000050</span><br><span class="line">* GPFCON：0x56000050</span><br><span class="line">* 0x1500 = 0001 0101 0000 0000  每两位控制一个引脚模式</span><br><span class="line">* 0x1500将GPF4 5 6设置为输出模式</span><br><span class="line">*/</span><br><span class="line">	ldr r1, =0x56000050</span><br><span class="line">	ldr r0, =0x1500 /* mov r0, #0x00001500 */</span><br><span class="line">	str r0,	[r1]</span><br><span class="line">	</span><br><span class="line">/*</span><br><span class="line">*设置GPF4输出高电平</span><br><span class="line">*把0x0写到地址0x56000054</span><br><span class="line">*GPFDAT：0x56000054</span><br><span class="line">*当IO处于输出模式时，GPFDAT内每一位值对应当前IO输出状态。</span><br><span class="line">* 将0写入GPFDAT寄存器，控制GPF4 5 6输出低电平。</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">	ldr r1, =0x56000054</span><br><span class="line">	ldr r0, =0 /* mov r0, #0 */</span><br><span class="line">	str r0,	[r1]</span><br><span class="line">	</span><br><span class="line">	/* 加入死循环 */</span><br><span class="line">halt:</span><br><span class="line">	b halt</span><br></pre></td></tr></table></figure>
+
+<h3 id="编译，链接，生成可执行文件"><a href="#编译，链接，生成可执行文件" class="headerlink" title="编译，链接，生成可执行文件"></a>编译，链接，生成可执行文件</h3><h4 id="arm-linux-gcc编译"><a href="#arm-linux-gcc编译" class="headerlink" title="arm-linux-gcc编译"></a>arm-linux-gcc编译</h4><ul>
+<li>将上面写好的LED.S文件拷贝到Ubuntu下。</li>
+<li>打开终端执行如下命令：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ arm-linux-gcc -c -o LED.o LED.S</span><br><span class="line">$ arm-linux-ld -Ttext 0 LED.o -o LED.elf</span><br><span class="line">$ arm-linux-objcopy -O binary -S LED.elf LED.bin</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="Makefile编译"><a href="#Makefile编译" class="headerlink" title="Makefile编译"></a>Makefile编译</h4><p>&emsp;&emsp; 上述方法编译每次需要执行三条指令，输入比较麻烦。可以将指令编写成Makefile文件，方便编译。Makefile文件制作如下：</p>
+<ul>
+<li><p>新建txt文件，重命名问Makefile(无格式)。</p>
+</li>
+<li><p>用NodePad++编辑如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">all:</span><br><span class="line">	arm-linux-gcc -c -o LED.o LED.S</span><br><span class="line">	arm-linux-ld -Ttext 0 LED.o -o LED.elf</span><br><span class="line">	arm-linux-objcopy -O binary -S LED.elf LED.bin</span><br><span class="line">clean:</span><br><span class="line">	rm *.bin *.o *.elf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将Makefile拷贝到Ubuntu下，与LED.S放在一起。在终端中输入make即可编译链接生成.bin文件。</p>
+</li>
+</ul>
+<h3 id="下载运行"><a href="#下载运行" class="headerlink" title="下载运行"></a>下载运行</h3><p>&emsp;&emsp; 将生成的.bin文件用u-Boot下载到NAND Flash上，调到NAND Flash启动模式，重启即可运行。</p>
+
       
     </div>
     
@@ -569,7 +594,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#硬件基础"><span class="nav-number">1.</span> <span class="nav-text">硬件基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#U-boot烧录"><span class="nav-number">2.</span> <span class="nav-text">U-boot烧录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#J-Link烧录"><span class="nav-number">2.1.</span> <span class="nav-text">J-Link烧录</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#硬件基础"><span class="nav-number">1.</span> <span class="nav-text">硬件基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#程序烧录"><span class="nav-number">2.</span> <span class="nav-text">程序烧录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#J-Link烧录"><span class="nav-number">2.1.</span> <span class="nav-text">J-Link烧录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用U-Boot下载bin文件"><span class="nav-number">2.2.</span> <span class="nav-text">使用U-Boot下载bin文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#建立串口通讯"><span class="nav-number">2.2.1.</span> <span class="nav-text">建立串口通讯</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立文件传输通道"><span class="nav-number">2.2.2.</span> <span class="nav-text">建立文件传输通道</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#驱动开发"><span class="nav-number">3.</span> <span class="nav-text">驱动开发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#驱动程序开发流程"><span class="nav-number">3.1.</span> <span class="nav-text">驱动程序开发流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LED驱动开发"><span class="nav-number">3.2.</span> <span class="nav-text">LED驱动开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理图"><span class="nav-number">3.2.1.</span> <span class="nav-text">原理图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#程序代码"><span class="nav-number">3.2.2.</span> <span class="nav-text">程序代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编写程序"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">编写程序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译，链接，生成可执行文件"><span class="nav-number">3.2.3.</span> <span class="nav-text">编译，链接，生成可执行文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#arm-linux-gcc编译"><span class="nav-number">3.2.3.1.</span> <span class="nav-text">arm-linux-gcc编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Makefile编译"><span class="nav-number">3.2.3.2.</span> <span class="nav-text">Makefile编译</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载运行"><span class="nav-number">3.2.4.</span> <span class="nav-text">下载运行</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
