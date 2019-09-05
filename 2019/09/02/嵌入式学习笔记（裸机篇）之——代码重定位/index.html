@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="STM32,SD卡,">
+  <meta name="keywords" content="嵌入式,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="SD卡和TF卡介绍SD卡&amp;emsp;&amp;emsp;SD卡是安全数码卡，是一种基于半导体快闪记忆器的新一代记忆设备，它被广泛地于便携式装置上使用，例如数码相机、个人数码助理（外语缩写PDA）和多媒体播放器，是目前消费数码设备中应用最广泛的一种存储卡。 TF卡&amp;emsp;&amp;emsp;TF卡全名(TransFLash),这是Motorola与SanDisk共同推出的最新一代的记忆卡规格，它采用了最新的封装">
-<meta name="keywords" content="STM32,SD卡">
+<meta name="description" content="原文地址：CLASS-13:代码重定位 原理分析段的概念&amp;emsp;&amp;emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。&amp;emsp;&amp;emsp;为什">
+<meta name="keywords" content="嵌入式">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SD卡和TF卡区别">
-<meta property="og:url" content="http://yoursite.com/2019/06/26/SD卡和TF(MicroSD)卡区别/index.html">
+<meta property="og:title" content="嵌入式学习笔记（裸机篇）之——代码重定位">
+<meta property="og:url" content="http://yoursite.com/2019/09/02/嵌入式学习笔记（裸机篇）之——代码重定位/index.html">
 <meta property="og:site_name" content="Tulring’s Blog">
-<meta property="og:description" content="SD卡和TF卡介绍SD卡&amp;emsp;&amp;emsp;SD卡是安全数码卡，是一种基于半导体快闪记忆器的新一代记忆设备，它被广泛地于便携式装置上使用，例如数码相机、个人数码助理（外语缩写PDA）和多媒体播放器，是目前消费数码设备中应用最广泛的一种存储卡。 TF卡&amp;emsp;&amp;emsp;TF卡全名(TransFLash),这是Motorola与SanDisk共同推出的最新一代的记忆卡规格，它采用了最新的封装">
+<meta property="og:description" content="原文地址：CLASS-13:代码重定位 原理分析段的概念&amp;emsp;&amp;emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。&amp;emsp;&amp;emsp;为什">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-26T06:17:16.578Z">
+<meta property="og:updated_time" content="2019-09-02T15:46:25.549Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SD卡和TF卡区别">
-<meta name="twitter:description" content="SD卡和TF卡介绍SD卡&amp;emsp;&amp;emsp;SD卡是安全数码卡，是一种基于半导体快闪记忆器的新一代记忆设备，它被广泛地于便携式装置上使用，例如数码相机、个人数码助理（外语缩写PDA）和多媒体播放器，是目前消费数码设备中应用最广泛的一种存储卡。 TF卡&amp;emsp;&amp;emsp;TF卡全名(TransFLash),这是Motorola与SanDisk共同推出的最新一代的记忆卡规格，它采用了最新的封装">
+<meta name="twitter:title" content="嵌入式学习笔记（裸机篇）之——代码重定位">
+<meta name="twitter:description" content="原文地址：CLASS-13:代码重定位 原理分析段的概念&amp;emsp;&amp;emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。&amp;emsp;&amp;emsp;为什">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/06/26/SD卡和TF(MicroSD)卡区别/">
+  <link rel="canonical" href="http://yoursite.com/2019/09/02/嵌入式学习笔记（裸机篇）之——代码重定位/">
 
 
 
 
 
-  <title>SD卡和TF卡区别 | Tulring’s Blog</title>
+  <title>嵌入式学习笔记（裸机篇）之——代码重定位 | Tulring’s Blog</title>
   
 
 
@@ -283,7 +283,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/26/SD卡和TF(MicroSD)卡区别/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/02/嵌入式学习笔记（裸机篇）之——代码重定位/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Tulring">
@@ -300,7 +300,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">SD卡和TF卡区别</h1>
+          <h1 class="post-title" itemprop="name headline">嵌入式学习笔记（裸机篇）之——代码重定位</h1>
         
 
         <div class="post-meta">
@@ -312,8 +312,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-26T14:01:16+08:00">
-                2019-06-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-02T23:24:49+08:00">
+                2019-09-02
               </time>
             
 
@@ -322,28 +322,6 @@
             
           </span>
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/STM32/" itemprop="url" rel="index">
-                    <span itemprop="name">STM32</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -372,63 +350,8 @@
       
 
       
-        <h1 id="SD卡和TF卡介绍"><a href="#SD卡和TF卡介绍" class="headerlink" title="SD卡和TF卡介绍"></a>SD卡和TF卡介绍</h1><h2 id="SD卡"><a href="#SD卡" class="headerlink" title="SD卡"></a>SD卡</h2><p>&emsp;&emsp;SD卡是安全数码卡，是一种基于半导体快闪记忆器的新一代记忆设备，它被广泛地于便携式装置上使用，例如数码相机、个人数码助理（外语缩写PDA）和多媒体播放器，是目前消费数码设备中应用最广泛的一种存储卡。</p>
-<h2 id="TF卡"><a href="#TF卡" class="headerlink" title="TF卡"></a>TF卡</h2><p>&emsp;&emsp;TF卡全名(TransFLash),这是Motorola与SanDisk共同推出的最新一代的记忆卡规格，它采用了最新的封装技术，并配合SanDisk最新NAND MLC技术及控制器技术。大小(11mm x 15mm x1mm)，约等于半张SIM卡，Trans-Flash Card为SD Card产品成员的一员,附有SD转接器，可兼容任何SD读卡器，TF卡可经SD卡转换器后，当SD卡使用。T-Flash卡是市面上最小的闪存卡,适用于多项多媒体应用.TF卡产品采用SD架构设计而成,SD协会于2004年年底正式将其更名为 Micro SD，已成为SD产品中的一员。</p>
-<h2 id="两种卡区别"><a href="#两种卡区别" class="headerlink" title="两种卡区别"></a>两种卡区别</h2><p>&emsp;&emsp;两种卡均支持SDIO模式和SPI模式，程序可以通用。但是硬件连接是有区别的。主要区别在于两者的引脚定义不同，如果用一样的电路去画PCB就踩坑了。我就遇到了这种情况，采用了SD卡的电路驱动TF卡，初始化过不去。<br>&emsp;&emsp;两种卡因脚定义如下：</p>
-<table>
-<thead>
-<tr>
-<th>引脚序号</th>
-<th>SD卡</th>
-<th>TF(MicroSD)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>Data3</td>
-<td>Data2</td>
-</tr>
-<tr>
-<td>2</td>
-<td>CMD</td>
-<td>Data3</td>
-</tr>
-<tr>
-<td>3</td>
-<td>GND</td>
-<td>CMD</td>
-</tr>
-<tr>
-<td>4</td>
-<td>VDD</td>
-<td>VDD</td>
-</tr>
-<tr>
-<td>5</td>
-<td>CLK</td>
-<td>CLK</td>
-</tr>
-<tr>
-<td>6</td>
-<td>GND</td>
-<td>GND</td>
-</tr>
-<tr>
-<td>7</td>
-<td>Data0</td>
-<td>Data0</td>
-</tr>
-<tr>
-<td>8</td>
-<td>Data1</td>
-<td>Data1</td>
-</tr>
-<tr>
-<td>9</td>
-<td>Data2</td>
-<td>Det</td>
-</tr>
-</tbody></table>
+        <p>原文地址：<a href="https://www.cnblogs.com/weidongshan/articles/8520567.html" target="_blank" rel="noopener"><strong>CLASS-13:代码重定位</strong></a></p>
+<h1 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h1><h2 id="段的概念"><a href="#段的概念" class="headerlink" title="段的概念"></a>段的概念</h2><p>&emsp;&emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。<br>&emsp;&emsp;为什还可以使用NAND启动？<br>&emsp;&emsp; - 上电后，Nand启动硬件会自动把Nand Flsh前4K复制到SRAM<br>&emsp;&emsp; - CPU从0地址运行SRAM<br>&emsp;&emsp;如果我的程序大于4K怎么办？前4K的代码需要把整个程序读出来放到SDRAM(即代码重定位)。<br>&emsp;&emsp;如果从Nor Flash启动，会出现什么问题？将拨动开关拨到Nor Flash启动时，此时CPU认为的 0地址 在Nor Flash上面，片内内存SRAM的基地址就变成了0x40000000(Nand启动时片内内存SRAM的基地址基地址是0)，由于Nor Flash特性：<strong>可以像内存一样读，但不能像内存直接写</strong>，因此需要把全局变量和静态变量重定位 放到SDRAM里。</p>
 
       
     </div>
@@ -446,9 +369,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/STM32/" rel="tag"># STM32</a>
-          
-            <a href="/tags/SD卡/" rel="tag"># SD卡</a>
+            <a href="/tags/嵌入式/" rel="tag"># 嵌入式</a>
           
         </div>
       
@@ -461,8 +382,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/06/25/STM32学习记录之定时器任务管理系统/" rel="next" title="STM32学习记录之定时器任务管理系统">
-                <i class="fa fa-chevron-left"></i> STM32学习记录之定时器任务管理系统
+              <a href="/2019/08/23/嵌入式入门/" rel="next" title="Linux嵌入式学习（基于JZ2440）">
+                <i class="fa fa-chevron-left"></i> Linux嵌入式学习（基于JZ2440）
               </a>
             
           </div>
@@ -470,10 +391,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/06/29/学习路线规划/" rel="prev" title="学习路线规划">
-                学习路线规划 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -657,7 +574,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SD卡和TF卡介绍"><span class="nav-number">1.</span> <span class="nav-text">SD卡和TF卡介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SD卡"><span class="nav-number">1.1.</span> <span class="nav-text">SD卡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TF卡"><span class="nav-number">1.2.</span> <span class="nav-text">TF卡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两种卡区别"><span class="nav-number">1.3.</span> <span class="nav-text">两种卡区别</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原理分析"><span class="nav-number">1.</span> <span class="nav-text">原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#段的概念"><span class="nav-number">1.1.</span> <span class="nav-text">段的概念</span></a></li></ol></li></ol></div>
             
 
           </div>
