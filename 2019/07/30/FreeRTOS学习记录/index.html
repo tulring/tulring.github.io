@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="FreeRTOS,STM32,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="FreeRTOS移植源码获取&amp;emsp;&amp;emsp;正点原子开发板资料中包含 FreeRTOSv9.0.0.exe 文件，解压后即可得到源码。解压后的源码文件目录如下：  FreeRTOS Demo     （官方例程） Source   （源码） License  （许可证）   FreeRTOS-PLUS&amp;emsp;&amp;emsp;本次以STM32F103为基础移植FreeRTOS，所以需要在De">
+<meta name="keywords" content="FreeRTOS,STM32">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FreeRTOS学习记录">
+<meta property="og:url" content="http://yoursite.com/2019/07/30/FreeRTOS学习记录/index.html">
+<meta property="og:site_name" content="Tulring’s Blog">
+<meta property="og:description" content="FreeRTOS移植源码获取&amp;emsp;&amp;emsp;正点原子开发板资料中包含 FreeRTOSv9.0.0.exe 文件，解压后即可得到源码。解压后的源码文件目录如下：  FreeRTOS Demo     （官方例程） Source   （源码） License  （许可证）   FreeRTOS-PLUS&amp;emsp;&amp;emsp;本次以STM32F103为基础移植FreeRTOS，所以需要在De">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-30T16:23:17.878Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FreeRTOS学习记录">
+<meta name="twitter:description" content="FreeRTOS移植源码获取&amp;emsp;&amp;emsp;正点原子开发板资料中包含 FreeRTOSv9.0.0.exe 文件，解压后即可得到源码。解压后的源码文件目录如下：  FreeRTOS Demo     （官方例程） Source   （源码） License  （许可证）   FreeRTOS-PLUS&amp;emsp;&amp;emsp;本次以STM32F103为基础移植FreeRTOS，所以需要在De">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/30/FreeRTOS学习记录/">
+
+
+
+
+
+  <title>FreeRTOS学习记录 | Tulring’s Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Tulring’s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>
+            
+            日程表
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/30/FreeRTOS学习记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tulring">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/iroman.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tulring’s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">FreeRTOS学习记录</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-30T22:26:52+08:00">
+                2019-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/STM32/" itemprop="url" rel="index">
+                    <span itemprop="name">STM32</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="FreeRTOS移植"><a href="#FreeRTOS移植" class="headerlink" title="FreeRTOS移植"></a>FreeRTOS移植</h1><h2 id="源码获取"><a href="#源码获取" class="headerlink" title="源码获取"></a>源码获取</h2><p>&emsp;&emsp;正点原子开发板资料中包含 FreeRTOSv9.0.0.exe 文件，解压后即可得到源码。解压后的源码文件目录如下：</p>
+<ul>
+<li>FreeRTOS<ul>
+<li>Demo     （官方例程）</li>
+<li>Source   （源码）</li>
+<li>License  （许可证）</li>
+</ul>
+</li>
+<li>FreeRTOS-PLUS<br>&emsp;&emsp;本次以STM32F103为基础移植FreeRTOS，所以需要在Demo文件夹内找到例程CORTEX_STM32F103_Keil，拷贝其中的FreeRTOSConfig.h文件到Source文件夹下。并将source -&gt;portable下除MemMang，RVDS，keil文件外其他文件夹删除。此时Source文件夹目录如下：</li>
+<li>Source<ul>
+<li>include</li>
+<li>portable<ul>
+<li>keil</li>
+<li>MemMang<ul>
+<li>heap_4.c</li>
+</ul>
+</li>
+<li>RVDS<ul>
+<li>ARM_CM3<ul>
+<li>port.c</li>
+<li>portmacro.h</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>croutine.c</li>
+<li>event_groups.c</li>
+<li>FreeRTOSConfig.h</li>
+<li>list.c</li>
+<li>queue.c</li>
+<li>tasks.c</li>
+<li>timers.c</li>
+</ul>
+</li>
+</ul>
+<h2 id="工程移植"><a href="#工程移植" class="headerlink" title="工程移植"></a>工程移植</h2><h3 id="向工程中添加文件"><a href="#向工程中添加文件" class="headerlink" title="向工程中添加文件"></a>向工程中添加文件</h3><p>&emsp;&emsp;在代码工程目录下创建FreeRTOS文件夹，将Source文件夹下所有文件拷贝到FreeRTOS文件夹下。工程中新建FreeRTOS分组，添加如下八个文件到分组中：</p>
+<ul>
+<li>croutine.c</li>
+<li>event_groups.c</li>
+<li>FreeRTOSConfig.h   (FreeRTOS配置文件)</li>
+<li>list.c</li>
+<li>queue.c</li>
+<li>tasks.c</li>
+<li>timers.c</li>
+<li>port.c</li>
+<li>heap_4.c   （内存管理方法）</li>
+</ul>
+<h3 id="添加头文件包含路径"><a href="#添加头文件包含路径" class="headerlink" title="添加头文件包含路径"></a>添加头文件包含路径</h3><p>&emsp;&emsp;添加路径如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">..\FreeRTOS\include</span><br><span class="line">..\FreeRTOS\portable\RVDS\ARM_CM3</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改FreeRTOSConfig-h文件"><a href="#修改FreeRTOSConfig-h文件" class="headerlink" title="修改FreeRTOSConfig.h文件"></a>修改FreeRTOSConfig.h文件</h3><p>&emsp;&emsp;在文件尾部加入如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">#ifndef FREERTOS_CONFIG_H</span><br><span class="line">#define FREERTOS_CONFIG_H</span><br><span class="line"></span><br><span class="line">/*-----------------------------------------------------------</span><br><span class="line"> * Application specific definitions.</span><br><span class="line"> *</span><br><span class="line"> * These definitions should be adjusted for your particular hardware and</span><br><span class="line"> * application requirements.</span><br><span class="line"> *</span><br><span class="line"> * THESE PARAMETERS ARE DESCRIBED WITHIN THE &apos;CONFIGURATION&apos; SECTION OF THE</span><br><span class="line"> * FreeRTOS API DOCUMENTATION AVAILABLE ON THE FreeRTOS.org WEB SITE. </span><br><span class="line"> *</span><br><span class="line"> * See http://www.freertos.org/a00110.html.</span><br><span class="line"> *----------------------------------------------------------*/</span><br><span class="line"></span><br><span class="line">#define configUSE_PREEMPTION		1   //使用可剥夺内核（可抢占）</span><br><span class="line">#define configUSE_IDLE_HOOK			0   //不使用空闲任务钩子函数   </span><br><span class="line">#define configUSE_TICK_HOOK			0   //使用低功耗机制</span><br><span class="line">#define configCPU_CLOCK_HZ			( ( unsigned long ) 72000000 )//CPU主频	</span><br><span class="line">#define configTICK_RATE_HZ			( ( TickType_t ) 1000 )//SysTick节拍频率</span><br><span class="line">#define configMAX_PRIORITIES		( 5 ) //最大任务优先级数目</span><br><span class="line">#define configMINIMAL_STACK_SIZE	( ( unsigned short ) 128 )//最小任务堆栈分配</span><br><span class="line">#define configTOTAL_HEAP_SIZE		( ( size_t ) ( 20 * 512 ) )//内存管理的内存空间大小10KB</span><br><span class="line">#define configMAX_TASK_NAME_LEN		( 16 )//任务名称最大长度</span><br><span class="line">#define configUSE_TRACE_FACILITY	0  //</span><br><span class="line">#define configUSE_16_BIT_TICKS		0 //不使用16位节拍数，使用32位节拍数</span><br><span class="line">#define configIDLE_SHOULD_YIELD		1 //空闲任务不主动让出使用权(不允许用户任务和空闲任务共享优先级)</span><br><span class="line"></span><br><span class="line">/* Co-routine definitions. */</span><br><span class="line">#define configUSE_CO_ROUTINES 		0   //不使用协程</span><br><span class="line">#define configMAX_CO_ROUTINE_PRIORITIES ( 2 )//协程优先级</span><br><span class="line"></span><br><span class="line">/* Set the following definitions to 1 to include the API function, or zero</span><br><span class="line">to exclude the API function. */</span><br><span class="line"></span><br><span class="line">#define INCLUDE_vTaskPrioritySet		1 //是否允许重设任务优先级</span><br><span class="line">#define INCLUDE_uxTaskPriorityGet		1 //是否允许获取任务优先级</span><br><span class="line">#define INCLUDE_vTaskDelete				1 //收允许任务删除</span><br><span class="line">#define INCLUDE_vTaskCleanUpResources	0 //</span><br><span class="line">#define INCLUDE_vTaskSuspend			1 //是否允许调度器挂起</span><br><span class="line">#define INCLUDE_vTaskDelayUntil			1 //</span><br><span class="line">#define INCLUDE_vTaskDelay				1 //</span><br><span class="line"></span><br><span class="line">/* This is the raw value as per the Cortex-M3 NVIC.  Values can be 255</span><br><span class="line">(lowest) to 0 (1?) (highest). */</span><br><span class="line">#define configKERNEL_INTERRUPT_PRIORITY 		255</span><br><span class="line">/* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!</span><br><span class="line">See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */</span><br><span class="line">#define configMAX_SYSCALL_INTERRUPT_PRIORITY 	191 /* equivalent to 0xb0, or priority 11. */</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/* This is the value being used as per the ST library which permits 16</span><br><span class="line">priority values, 0 to 15.  This must correspond to the</span><br><span class="line">configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest</span><br><span class="line">NVIC value of 255. */</span><br><span class="line">#define configLIBRARY_KERNEL_INTERRUPT_PRIORITY	15</span><br><span class="line">/* 定义操作系统中断位STM32底层中断*/</span><br><span class="line">#define vPortSVCHandler SVC_Handler</span><br><span class="line">#define xPortPendSVHandler PendSV_Handler</span><br><span class="line">#define xPortSysTickHandler SysTick_Handler</span><br><span class="line"></span><br><span class="line">#endif /* FREERTOS_CONFIG_H */</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;这段代码将FreeRTOS的中断函数指向STM32底层中断函数，为FreeRTOS提供时钟源和中断源。</p>
+<h3 id="修改stm32f10x-it-c文件"><a href="#修改stm32f10x-it-c文件" class="headerlink" title="修改stm32f10x_it.c文件"></a>修改stm32f10x_it.c文件</h3><p>&emsp;&emsp;然后编译代码，发现会报错，因为stm32f10x_it.c文件中重复定义了SVC_Handler(),PendSV_Handler(),SysTick_Handler()这三个函数，需要直接注释掉这段代码。<br>&emsp;&emsp;再次编译即可通过。</p>
+<h1 id="FreeRTOS使用"><a href="#FreeRTOS使用" class="headerlink" title="FreeRTOS使用"></a>FreeRTOS使用</h1><h2 id="新建任务-xTaskCreate"><a href="#新建任务-xTaskCreate" class="headerlink" title="新建任务 xTaskCreate()"></a>新建任务 xTaskCreate()</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">/* FreeRTOS头文件*/</span><br><span class="line">#include &quot;FreeRTOS.h&quot;</span><br><span class="line">#include &quot;task.h&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#define START_TASK_PRIO    4         //任务优先级</span><br><span class="line">#define START_TASK_SIZE    128        //人物堆栈大小</span><br><span class="line">TaskHandle_t StartTask_Handler;        //任务句柄</span><br><span class="line">void start_task(void *pvParameters);     //任务函数</span><br><span class="line"></span><br><span class="line">#define LED2_TASK_PRIO    5           //任务优先级</span><br><span class="line">#define LED2_TASK_SIZE    50          //人物堆栈大小</span><br><span class="line">TaskHandle_t LED2Task_Handler;         //任务句柄</span><br><span class="line">void led2_task(void *pvParameters);     //任务函数</span><br><span class="line">......</span><br><span class="line"> int main(void)</span><br><span class="line"> &#123;	</span><br><span class="line">	SetParam();  //参数设置</span><br><span class="line">	SysInit();  //系统硬件初始化</span><br><span class="line">	/* 创建开始任务 */</span><br><span class="line">	xTaskCreate( start_task,      // 任务函数指针</span><br><span class="line">							 &quot;start_task&quot;,    // 任务名称</span><br><span class="line">							 START_TASK_SIZE,  // 任务堆栈大小</span><br><span class="line">							 NULL,         // 任务参数</span><br><span class="line">							 START_TASK_PRIO,  // 任务优先级</span><br><span class="line">							 &amp;StartTask_Handler ); // 任务句柄</span><br><span class="line"></span><br><span class="line">	/*启动任务调度器(操作系统开始运行) */</span><br><span class="line">	vTaskStartScheduler();</span><br><span class="line"> &#125;</span><br><span class="line"> void start_task(void *pvParameters)</span><br><span class="line">&#123;</span><br><span class="line">	taskENTER_CRITICAL();//进入代码临界区</span><br><span class="line">		xTaskCreate( led2_task,      // 任务函数指针</span><br><span class="line">							 &quot;led2_task&quot;,     // 任务名称</span><br><span class="line">							 LED2_TASK_SIZE,   // 任务堆栈大小</span><br><span class="line">							 NULL,          // 任务参数</span><br><span class="line">							 LED2_TASK_PRIO,   // 任务优先级</span><br><span class="line">							 &amp;LED2Task_Handler ); // 任务句柄</span><br><span class="line">	vTaskDelete(StartTask_Handler);  // 删除任务</span><br><span class="line">	taskEXIT_CRITICAL();//退出代码临界区</span><br><span class="line">&#125;</span><br><span class="line">void led2_task(void *pvParameters)</span><br><span class="line">&#123;</span><br><span class="line">	while(1)</span><br><span class="line">	&#123;</span><br><span class="line">		LED2=!LED2;</span><br><span class="line">		vTaskDelay(500);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/FreeRTOS/" rel="tag"># FreeRTOS</a>
+          
+            <a href="/tags/STM32/" rel="tag"># STM32</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/30/C#学习笔记/" rel="next" title="C#学习笔记">
+                <i class="fa fa-chevron-left"></i> C#学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/01/部门代码学习笔记/" rel="prev" title="部门代码学习笔记">
+                部门代码学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/iroman.jpg" alt="Tulring">
+            
+              <p class="site-author-name" itemprop="name">Tulring</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/tulring" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:342656372@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="/images/wechat.jpg" target="_blank" title="微信">
+                      
+                        <i class="fa fa-fw fa-globe"></i>微信</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="/images/qq.jpg" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                电子开源网站
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.openedv.com/" title="正点原子" target="_blank">正点原子</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.firebbs.cn/forum.php" title="野火开源" target="_blank">野火开源</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://forum.armfly.com/forum.php" title="安富莱" target="_blank">安富莱</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#FreeRTOS移植"><span class="nav-number">1.</span> <span class="nav-text">FreeRTOS移植</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#源码获取"><span class="nav-number">1.1.</span> <span class="nav-text">源码获取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工程移植"><span class="nav-number">1.2.</span> <span class="nav-text">工程移植</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#向工程中添加文件"><span class="nav-number">1.2.1.</span> <span class="nav-text">向工程中添加文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加头文件包含路径"><span class="nav-number">1.2.2.</span> <span class="nav-text">添加头文件包含路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改FreeRTOSConfig-h文件"><span class="nav-number">1.2.3.</span> <span class="nav-text">修改FreeRTOSConfig.h文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改stm32f10x-it-c文件"><span class="nav-number">1.2.4.</span> <span class="nav-text">修改stm32f10x_it.c文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FreeRTOS使用"><span class="nav-number">2.</span> <span class="nav-text">FreeRTOS使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新建任务-xTaskCreate"><span class="nav-number">2.1.</span> <span class="nav-text">新建任务 xTaskCreate()</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tulring</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

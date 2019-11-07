@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="嵌入式,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址：CLASS-13:代码重定位 原理分析段的概念&amp;emsp;&amp;emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。&amp;emsp;&amp;emsp;为什">
+<meta name="keywords" content="嵌入式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="嵌入式学习笔记（裸机篇）之——代码重定位">
+<meta property="og:url" content="http://yoursite.com/2019/09/02/嵌入式学习笔记（裸机篇）之——代码重定位/index.html">
+<meta property="og:site_name" content="Tulring’s Blog">
+<meta property="og:description" content="原文地址：CLASS-13:代码重定位 原理分析段的概念&amp;emsp;&amp;emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。&amp;emsp;&amp;emsp;为什">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-12T09:41:16.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="嵌入式学习笔记（裸机篇）之——代码重定位">
+<meta name="twitter:description" content="原文地址：CLASS-13:代码重定位 原理分析段的概念&amp;emsp;&amp;emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。&amp;emsp;&amp;emsp;为什">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/02/嵌入式学习笔记（裸机篇）之——代码重定位/">
+
+
+
+
+
+  <title>嵌入式学习笔记（裸机篇）之——代码重定位 | Tulring’s Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Tulring’s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>
+            
+            日程表
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/02/嵌入式学习笔记（裸机篇）之——代码重定位/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tulring">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/iroman.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tulring’s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">嵌入式学习笔记（裸机篇）之——代码重定位</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-02T23:24:49+08:00">
+                2019-09-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>原文地址：<a href="https://www.cnblogs.com/weidongshan/articles/8520567.html" target="_blank" rel="noopener"><strong>CLASS-13:代码重定位</strong></a></p>
+<h1 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h1><h2 id="段的概念"><a href="#段的概念" class="headerlink" title="段的概念"></a>段的概念</h2><p>&emsp;&emsp;S3C2440的CPU可以直接给SDRAM发送命令、给Nor Flash发送命令、给4K的片上SDRAM发送命令，但是不能直接给Nand Flsh发送命令，假如把程序烧写到Nand Flsh上，即向Nand Flsh烧入** bin** 文件，CPU是无法从Nand Flsh中取代码执行的。<br>&emsp;&emsp;为什还可以使用NAND启动？<br>&emsp;&emsp; - 上电后，Nand启动硬件会自动把Nand Flsh前4K复制到SRAM<br>&emsp;&emsp; - CPU从0地址运行SRAM<br>&emsp;&emsp;如果我的程序大于4K怎么办？前4K的代码需要把整个程序读出来放到SDRAM(即代码重定位)。<br>&emsp;&emsp;如果从Nor Flash启动，会出现什么问题？将拨动开关拨到Nor Flash启动时，此时CPU认为的 0地址 在Nor Flash上面，片内内存SRAM的基地址就变成了0x40000000(Nand启动时片内内存SRAM的基地址基地址是0)，由于Nor Flash特性：<strong>可以像内存一样读，但不能像内存直接写</strong>，在使用一些全局变量，静态变量时，修改是无效的。因此需要把全局变量和静态变量重定位 放到SDRAM里。<br>&emsp;一个完整的程序有：<br>&emsp;&emsp;  - .txt  代码段<br>&emsp;&emsp;  - .data  数据段<br>&emsp;&emsp;  - rodata 只读数据段(const全局变量)<br>&emsp;&emsp;  - bss段  初始值为0,无初始值的全局变量<br>&emsp;&emsp;  - commen  注释段。<br>&emsp;其中bss段和commen注释不保存在bin文件中。</p>
+<h2 id="链接脚本引入和简单测试"><a href="#链接脚本引入和简单测试" class="headerlink" title="链接脚本引入和简单测试"></a>链接脚本引入和简单测试</h2><p>&emsp;&emsp; 当程序在Nand Flash上运行时，程序输出‘ABCDE……’,当程序运行在Nor Flash上时，写操作无效，因此输出‘AAAAAA’。为解决NorFlash无法写变量的问题，我们把数据段放到SDRAM中。修改MakeFile文件，指定数据段地址为0x30000000 ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-linux-ld -Ttext 0 -Tdata 0x30000000  start.o led.o uart.o init.o main.o -o sdram.elf  //指定代码段地址为0，数据段地址为0x30000000</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;如此编译出来的文件有700多M，因为代码段开始于0x00000000，数据段开始于0X30000000，中间存在间隔，称作黑洞。解决黑洞的办法有两个：<br>&emsp;&emsp; 方法一：<br>&emsp;&emsp;&emsp;&emsp; - 将数据段和代码段靠在一起<br>&emsp;&emsp;&emsp;&emsp; - 烧写到nor flash上<br>&emsp;&emsp;&emsp;&emsp; - 运行时将数据段复制到SDRAM，即0x30000000(重定位)。<br>&emsp;&emsp; 方法二：<br>&emsp;&emsp;&emsp;&emsp; - 让文件直接从0x30000000开始，全局变量跟在其后。<br>&emsp;&emsp;&emsp;&emsp; - 烧写到nor flash 0地址处<br>&emsp;&emsp;&emsp;&emsp; - 运行时会把整个代码数据段（整个程序）从0地址copy到SDRAM的0x30000000处（重定位）。<br>&emsp;&emsp;两个方法区别在于前者只重定位了数据段，后者重定位了数据段和代码段。</p>
+<h3 id="方法一实现"><a href="#方法一实现" class="headerlink" title="方法一实现"></a>方法一实现</h3><p>&emsp;&emsp;修改MakeFile的代码段地址，使用链接脚本sdram.lds指定。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#arm-linux-ld -Ttext 0 -Tdata 0x30000000  start.o led.o uart.o init.o main.o -o sdram.elf  //指定代码段地址为0，数据段地址为0x30000000</span><br><span class="line">arm-linux-ld -T sdram.lds start.o led.o uart.o init.o main.o -o sdram.elf</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;链接脚本语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SECTIONS &#123;</span><br><span class="line">...</span><br><span class="line">secname start BLOCK(align) (NOLOAD) : AT ( ldadr )</span><br><span class="line">  &#123; contents &#125; &gt;region :phdr =fill</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;我们需要依次排列代码段、只读数据段、数据段、.bss段、.common。其中数据段放在0x700,但运行时在0x3000000：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SECTIONS &#123;</span><br><span class="line">   .text   0  : &#123; *(.text) &#125;//所有文件的.text</span><br><span class="line">   .rodata  : &#123; *(.rodata) &#125; //只读数据段</span><br><span class="line">   .data 0x30000000 : AT(0x700) &#123; *(.data) &#125; //放在0x700,但运行时在0x3000000</span><br><span class="line">   .bss  : &#123; *(.bss) *(.COMMON) &#125;//所有文件的bss段，所有文件的.COMMON段</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/嵌入式/" rel="tag"># 嵌入式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/23/嵌入式入门/" rel="next" title="Linux嵌入式学习（基于JZ2440）">
+                <i class="fa fa-chevron-left"></i> Linux嵌入式学习（基于JZ2440）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/iroman.jpg" alt="Tulring">
+            
+              <p class="site-author-name" itemprop="name">Tulring</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/tulring" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:342656372@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="/images/wechat.jpg" target="_blank" title="微信">
+                      
+                        <i class="fa fa-fw fa-globe"></i>微信</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="/images/qq.jpg" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                电子开源网站
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.openedv.com/" title="正点原子" target="_blank">正点原子</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.firebbs.cn/forum.php" title="野火开源" target="_blank">野火开源</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://forum.armfly.com/forum.php" title="安富莱" target="_blank">安富莱</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原理分析"><span class="nav-number">1.</span> <span class="nav-text">原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#段的概念"><span class="nav-number">1.1.</span> <span class="nav-text">段的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链接脚本引入和简单测试"><span class="nav-number">1.2.</span> <span class="nav-text">链接脚本引入和简单测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方法一实现"><span class="nav-number">1.2.1.</span> <span class="nav-text">方法一实现</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tulring</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
